@@ -3,7 +3,7 @@ import { toast } from "@/hooks/useToast";
 
 
 export const axiosInstance = axios.create({
-    baseURL: import.meta.env.VITE_API_PRIVATE_URL || "http://localhost:3000",
+    baseURL: import.meta.env.VITE_BACKEND_API,
     withCredentials: true,
 });
 
