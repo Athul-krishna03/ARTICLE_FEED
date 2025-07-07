@@ -72,17 +72,14 @@ export class ArticleService implements IArticleService{
         if (updateType === "edit" && existing.author !== userId) {
             return null;
         }
-
         return this._articleRepo.update(id, article);
     }
-
     async deleteArticle(id: string, userId: string): Promise<boolean> {
         const existing = await this._articleRepo.findById(id);
         console.log("existing",existing)
         if (!existing || existing.author !== userId) return false;
         return this._articleRepo.delete(id);
     }
-
     async reactToArticle(id: string, reaction: 'likes' | 'dislikes' | 'blocks', userId: string): Promise<Article | null> {
         return this._articleRepo.addReaction(id, reaction, userId);
     }
