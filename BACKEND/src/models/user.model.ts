@@ -10,6 +10,7 @@ const userSchema = new Schema({
     preferences: [{ type: Schema.Types.ObjectId, ref: 'Category' }],
     refreshToken: {
         type: String,
+        default:""
     }
 },
 {

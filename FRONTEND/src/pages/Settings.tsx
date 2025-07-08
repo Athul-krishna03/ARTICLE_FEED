@@ -263,7 +263,7 @@ export default function ProfileEdit({
                     {isEditing ? (
                     <EditableField label="Date of Birth" name="dob" type="date" required />
                     ) : (
-                    <DisplayField label="Date of Birth" value={values.dob} />
+                    <DisplayField label="Date of Birth" value={new Date(values.dob).toISOString().split("T")[0]} />
                     )}
 
                     {/* Preferences */}

@@ -42,9 +42,6 @@ export const updateArticle = async (id: string, data: any) =>{
 export const deleteArticle = async (id: string) =>{ 
     return await axiosInstance.delete(ARTICLE_ROUTES.DELETE(id))
 };
-export const reactToArticle = (id: string, reaction: 'likes' | 'dislikes' | 'blocks') =>{
-    api.post(`/articles/${id}/react`, { reaction })
-};
 export const getCategories = async () => {
     const response = await api.get(AUTH_ROUTES.CATEGORIES)
     console.log(response.data.data)

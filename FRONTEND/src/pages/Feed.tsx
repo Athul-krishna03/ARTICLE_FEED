@@ -12,11 +12,14 @@ export default function ArticleFeedPage() {
   const { data, isLoading } = useGetArticleData();
   useEffect(() => {
     if (data) {
-      setArticles(() => data.filter((article: Article) => article.author?._id != user?._id));
+      setArticles(() => data
+        .filter((article: Article) => article.author?._id !== user?._id)
+        .filter((article: Article) => !article.blocks.includes(user?._id ?? ""))
+      );
     }
   }, [data]);
 
-
+  console.log("article",data)
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 overflow-auto scrollbar-hide">
       <Header/>

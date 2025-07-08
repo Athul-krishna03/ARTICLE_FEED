@@ -19,6 +19,12 @@ export class AuthService implements IAuthService {
 
   async register(user: User): Promise<User> {
     user.password = await hashPassword(user.password);
+    const existingUser = await this.userRepository.findByEmailOrPhone(
+      user.email
+    );
+    if (existingUser) {
+      throw new Error("already exists with this email or phone number");
+    }
     return this.userRepository.create(user);
   }
 

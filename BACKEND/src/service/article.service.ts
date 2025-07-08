@@ -25,7 +25,7 @@ export class ArticleService implements IArticleService{
             if(!userData){
                 throw new Error(ERROR_MESSAGES.USER_NOT_FOUND)
             }
-            return (await this._articleRepo.findByPreferences(userData?.preferences)).filter((val)=>val.blocks.indexOf(userId) === -1);
+            return await this._articleRepo.findByPreferences(userData?.preferences);
         } catch (error) {
             handleErrorResponse(error)
             return [];

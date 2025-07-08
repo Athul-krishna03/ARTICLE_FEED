@@ -20,7 +20,8 @@ export const useAddArticle = () => {
             console.log("hook",data)
             if(data.updateType === 'delete') {
                 const { _id } = data;
-                return deleteArticle(_id as string);
+                deleteArticle(_id as string);
+                return 
             }
             if (data._id) {
                 const { _id, ...rest } = data;
@@ -31,6 +32,7 @@ export const useAddArticle = () => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['userArticle'] });
+            queryClient.invalidateQueries({ queryKey: ['article'] });
         },
     });
 };

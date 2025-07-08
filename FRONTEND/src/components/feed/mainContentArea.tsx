@@ -15,6 +15,7 @@ import { uploadProfileImageCloudinary } from "@/utils/uploadImagetoClaudinary";
 import { articleSchema } from "@/utils/validators/articlevalidator";
 import { useAddArticle } from "@/hooks/useAddArticle";
 import ArticleViewPage from "./ArticleView";
+import { toast } from "sonner";
 
 interface Category {
     _id: string;
@@ -57,7 +58,7 @@ const MainContentArea = ({articles, type}: ContentTypes) => {
 
         if (action === "block") {
             articles.filter((article) => article._id !== articleId);
-            alert("Author blocked and article removed from your feed!");
+            toast.success("Article blocked successfully");
         }
         if (action == "like") {
             addArticle({_id: articleId, ...Data, updateType: "like"});

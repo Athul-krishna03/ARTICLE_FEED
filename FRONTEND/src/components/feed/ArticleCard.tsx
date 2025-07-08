@@ -98,16 +98,20 @@ const ArticleCard = ({ article, onAction, showEditOption = false, onArticleClick
                     {showEditOption && (
                     <>
                         <button
-                        onClick={
-                            handleEdit
-                        }
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleEdit();
+                        }}
                         className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2 text-blue-600"
                         >
                         <Edit className="w-4 h-4" />
                         <span>Edit Article</span>
                         </button>
                         <button
-                        onClick={handleDelete}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete();
+                        }}
                         className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2 text-red-600"
                         >
                         <Trash2 className="w-4 h-4" />
@@ -118,11 +122,14 @@ const ArticleCard = ({ article, onAction, showEditOption = false, onArticleClick
                     )}
                     {!showEditOption && (
                     <button
-                        onClick={handleBlock}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleBlock();
+                        }}
                         className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2 text-red-600"
                         >
                         <Ban className="w-4 h-4" />
-                        <span>Block Author</span>
+                        <span>Block</span>
                     </button>)}
                 </div>
                 )}
