@@ -11,10 +11,7 @@ export interface AuthRequest extends Request {
 }
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
-    console.log("cookie",req.cookies)
     const token = req.cookies['x-access-token'];
-    console.log("token ",token)
-
     if (!token) {
         res.status(STATUS_CODE.UNAUTHORIZED).json({
             message: ERROR_MESSAGES.TOKEN_MISSING
@@ -24,7 +21,6 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
 
     try {
         const decoded = verifyAccessToken(token);
-        console.log("decode data",decoded);
         (req as AuthRequest).user = decoded;
         next();
     } catch (error) {

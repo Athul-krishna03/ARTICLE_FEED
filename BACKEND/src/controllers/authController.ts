@@ -21,20 +21,17 @@ export class AuthController {
 
     async register(req: Request, res: Response) {
         try {
-            console.log("body",req.body)
         const user = await this.authService.register(req.body);
-        res.status(201).json(user);
+        res.status(STATUS_CODE.CREATED).json(user);
         } catch (error) {
-        res.status(400).json({ message: (error as Error).message });
+        res.status(STATUS_CODE.BAD_REQUEST).json({ message: (error as Error).message });
         }
     }
 
     async login(req: Request, res: Response) {
         const { email, password } = req.body;
-        console.log("login",req.body)
         const result = await this.authService.login(email, password);
-        console.log("login result",result)
-        if (!result) return res.status(401).json({ message: 'Invalid credentials' });
+        if (!result) return res.status(STATUS_CODE.UNAUTHORIZED).json({ message: ERROR_MESSAGES.INVALID_CREDENTIALS });
         setCookies(res,result.access_token,result.refresh_token)
         res.json({ user: result.user });
     }
@@ -48,16 +45,16 @@ export class AuthController {
     async updateProfile(req: Request, res: Response) {
         const userId = (req as AuthRequest).user?.id;
         if (!userId) {
-            return res.status(400).json({ message: 'User ID is missing' });
+            return res.status(STATUS_CODE.BAD_REQUEST).json({ message: ERROR_MESSAGES.USER_ID_NOT_PROVIDED });
         }
         const user = await this.authService.updateProfile(userId, req.body);
-        if (!user) return res.status(404).json({ message: 'User not found' });
+        if (!user) return res.status(STATUS_CODE.NOT_FOUND).json({ message: ERROR_MESSAGES.USER_NOT_FOUND });
         res.json(user);
     }
 
     async getCategories(req: Request, res: Response){
         const data= await this.categoryService.getAllCategories()
-        return res.status(200).json({message:"cat data",data})
+        return res.status(STATUS_CODE.OK).json({message:"cat data",data})
     }
 
     async getRefreshToken(req: Request, res: Response){

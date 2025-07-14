@@ -1,18 +1,22 @@
-import mongoose, { Schema, Types } from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import { Article } from '../entities/article.entity';
 import { IArticleRepository } from '../interfaces/repositoryInterfaces/IArticleRepository';
-import { ArticleModel } from '../models/article.model';
+import { ArticleModel, ArticleDocument } from '../models/article.model';
+import { BaseRepository } from './base.respository';
 
 
-function toArticle(doc: any): Article {
+function toArticle(doc: ArticleDocument): Article {
     return {
         _id: doc._id.toString(),
         title: doc.title,
         description: doc.description,
         imageUrl: doc.imageUrl,
         tags: doc.tags,
-        category: doc.category?._id ? doc.category._id.toString() : doc.category.toString(),
-        author: doc.author?._id ? doc.author._id.toString() : doc.author.toString(),
+        category: {_id:doc.category?._id? doc.category._id.toString() : doc.category.toString(),name:doc.category?.name},
+        author: {_id:doc.author?._id ? doc.author._id.toString() : doc.author.toString(),
+            firstName:doc.author.firstName,
+            lastName:doc.author.lastName
+        },
         likes: doc.likes.map((id: mongoose.Types.ObjectId) => id.toString()),
         dislikes: doc.dislikes.map((id: mongoose.Types.ObjectId) => id.toString()),
         blocks: doc.blocks.map((id: mongoose.Types.ObjectId) => id.toString()),
@@ -21,50 +25,45 @@ function toArticle(doc: any): Article {
     };
 }
 
-export class ArticleRepository implements IArticleRepository {
+export class ArticleRepository extends BaseRepository<Article, ArticleDocument> implements IArticleRepository {
+
+    constructor() {
+        super(ArticleModel, toArticle);
+    }
     async findById(id: string): Promise<Article | null> {
         const doc = await ArticleModel.findById(id)
         .populate('category', 'name')
         .populate('author', 'firstName lastName')
         .lean();
-        return doc ? toArticle(doc) : null;
+        return doc ? toArticle(doc as ArticleDocument) : null;
     }
 
-    async findByPreferences(preferenceIds: Types.ObjectId[]): Promise<any[]> {
+    async findByPreferences(preferenceIds: Types.ObjectId[]): Promise<Article[]> {
         const docs = await ArticleModel.find({ category: { $in: preferenceIds } })
         .populate('category', 'name')
         .populate('author', 'firstName lastName')
         .lean();
-        return docs;
+        return docs.map((doc)=>toArticle(doc as ArticleDocument));
     }
 
-    async findByAuthor(authorId: string): Promise<any[]> {
+    async findByAuthor(authorId: string): Promise<Article[]> {
         const docs = await ArticleModel.find({ author: authorId })
         .populate('category', 'name')
         .populate('author', 'firstName lastName')
         .lean();
-        return docs;
+        return docs.map((doc)=>toArticle(doc as ArticleDocument));
     }
-
-    async create(article: Article): Promise<Article> {
-        const doc = await ArticleModel.create({
-        ...article,
-        category: new mongoose.Types.ObjectId(article.category),
-        author: new mongoose.Types.ObjectId(article.author),
-        likes:[],
-        dislikes:[],
-        blocks:[]
-        });
-        return toArticle(doc);
-    }
-
     async update(id: string, article: Partial<Article>): Promise<Article | null> {
         const update: any = { ...article, updatedAt: new Date() };
         if (article.category) {
-        update.category = new mongoose.Types.ObjectId(article.category);
+        update.category = new mongoose.Types.ObjectId(
+            typeof article.category === 'string'
+                ? article.category
+                : article.category._id
+        );
         }
         if (article.author) {
-        update.author = new mongoose.Types.ObjectId(article.author);
+        update.author = new mongoose.Types.ObjectId(article.author._id);
         }
         if (article.likes) {
         update.likes = article.likes.map((id) => new mongoose.Types.ObjectId(id));
@@ -75,17 +74,11 @@ export class ArticleRepository implements IArticleRepository {
         if (article.blocks) {
         update.blocks = article.blocks.map((id) => new mongoose.Types.ObjectId(id));
         }
-        console.log("update in repo",update)
         const doc = await ArticleModel.findByIdAndUpdate(id, update, { new: true })
         .populate('category', 'name')
         .populate('author', 'firstName lastName')
         .lean();
-        return doc ? toArticle(doc) : null;
-    }
-
-    async delete(id: string): Promise<boolean> {
-        const result = await ArticleModel.findByIdAndDelete(id);
-        return !!result;
+        return doc ? toArticle(doc as ArticleDocument) : null;
     }
 
     async addReaction(id: string, reaction: 'likes' | 'dislikes' | 'blocks', userId: string): Promise<Article | null> {
@@ -94,6 +87,6 @@ export class ArticleRepository implements IArticleRepository {
         .populate('category', 'name')
         .populate('author', 'firstName lastName')
         .lean();
-        return doc ? toArticle(doc) : null;
+        return doc ? toArticle(doc as ArticleDocument) : null;
     }
 }

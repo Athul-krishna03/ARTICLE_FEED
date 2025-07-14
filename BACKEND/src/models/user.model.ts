@@ -1,6 +1,17 @@
-import mongoose ,{Schema}from 'mongoose'
+import mongoose ,{Schema, Types}from 'mongoose'
 
-const userSchema = new Schema({
+export interface UserDocument extends Document {
+    _id: Types.ObjectId;
+    firstName: string;
+    lastName: string;
+    phone: string;
+    email: string;
+    dob: Date;
+    password: string;
+    preferences: Types.ObjectId[]; 
+    refreshToken?: string;
+}
+const userSchema = new Schema<UserDocument>({
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     phone: { type: String, required: true, unique: true },

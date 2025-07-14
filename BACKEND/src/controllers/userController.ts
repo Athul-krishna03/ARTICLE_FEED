@@ -16,7 +16,6 @@ export class UserController{
     async getUserArticles(req:Request,res:Response){
         try {
             const userId = (req as AuthRequest).user.id
-            console.log("userId",userId)
             const articleData = await this._IArticleService.getArticlesByPreferences(userId)
             if(articleData){
                 res.status(STATUS_CODE.OK).json({message:SUCCESS_MESSAGES.DATA_FETCHED,data:articleData})
@@ -44,8 +43,6 @@ export class UserController{
         try {
             const userId = (req as AuthRequest).user.id
             const data = {...req.body,author:userId}
-            console.log("article data ",data)
-
             const article = await this._IArticleService.createArticle(data)
             if(article){
                 res.status(STATUS_CODE.CREATED).json({message:SUCCESS_MESSAGES.CREATED_SUCCESS})
@@ -62,25 +59,23 @@ export class UserController{
         const articleId = req.params.id;
         const userId = (req as AuthRequest).user.id;
         const updateData = req.body;
-        console.log(req.body)
         const updateType = req.body.updateType
 
         const updated = await this._IArticleService.updateArticle(articleId, updateData,updateType, userId);
         if (updated) {
-            res.status(200).json({ message: SUCCESS_MESSAGES.UPDATED_SUCCESS });
+            res.status(STATUS_CODE.OK).json({ message: SUCCESS_MESSAGES.UPDATED_SUCCESS });
         } else {
-            res.status(404).json({ message: ERROR_MESSAGES.ARTICLE_NOT_FOUND });
+            res.status(STATUS_CODE.NOT_FOUND).json({ message: ERROR_MESSAGES.ARTICLE_NOT_FOUND });
         }
     }
     async deleteArticle(req: Request, res: Response) {
         const articleId = req.params.id;
         const userId = (req as AuthRequest).user.id;
-        console.log("articleId", articleId, "userId", userId);
         const deleted = await this._IArticleService.deleteArticle(articleId, userId);
         if (deleted) {
-            res.status(200).json({ message: SUCCESS_MESSAGES.DELETED_SUCCESS });
+            res.status(STATUS_CODE.OK).json({ message: SUCCESS_MESSAGES.DELETED_SUCCESS });
         } else {
-            res.status(404).json({ message: ERROR_MESSAGES.ARTICLE_NOT_FOUND });
+            res.status(STATUS_CODE.NOT_FOUND).json({ message: ERROR_MESSAGES.ARTICLE_NOT_FOUND });
         }
     }
 }

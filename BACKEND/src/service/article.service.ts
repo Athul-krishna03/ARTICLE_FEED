@@ -19,9 +19,7 @@ export class ArticleService implements IArticleService{
 
     async getArticlesByPreferences(userId:string): Promise<Article[]> {
         try {
-            console.log("id",userId)
-            const userData = await this._userRepo.findBy(userId)
-            console.log("userData",userData)
+            const userData = await this._userRepo.findById(userId)
             if(!userData){
                 throw new Error(ERROR_MESSAGES.USER_NOT_FOUND)
             }
@@ -69,15 +67,14 @@ export class ArticleService implements IArticleService{
                 : [...removeUserId(existing.blocks), userId];
         }
 
-        if (updateType === "edit" && existing.author !== userId) {
+        if (updateType === "edit" && existing.author._id !== userId) {
             return null;
         }
         return this._articleRepo.update(id, article);
     }
     async deleteArticle(id: string, userId: string): Promise<boolean> {
         const existing = await this._articleRepo.findById(id);
-        console.log("existing",existing)
-        if (!existing || existing.author !== userId) return false;
+        if (!existing || existing.author._id !== userId) return false;
         return this._articleRepo.delete(id);
     }
     async reactToArticle(id: string, reaction: 'likes' | 'dislikes' | 'blocks', userId: string): Promise<Article | null> {

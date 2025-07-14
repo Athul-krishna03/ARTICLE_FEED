@@ -64,10 +64,7 @@ export class AuthService implements IAuthService {
     access: string
   ): Promise<{ newAccessToken: string; newRefreshToken: string }> {
     const decoded: any = verifyRefreshToken(refresh);
-    const user = await this.userRepository.findBy(decoded.id);
-    console.log("user Data",user,"refresh",refresh);
-    
-
+    const user = await this.userRepository.findById(decoded.id);
     if (!user || user.refreshToken !== refresh) {
       throw new Error(
         ERROR_MESSAGES.TOKEN_INVALID_REUSED

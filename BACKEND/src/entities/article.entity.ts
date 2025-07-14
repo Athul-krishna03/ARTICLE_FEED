@@ -1,11 +1,20 @@
+import { Types } from "mongoose";
+
 export interface Article {
-    _id: string;
+    _id: string | Types.ObjectId;
     title: string;
     description: string;
     imageUrl?: string;
     tags: string[];
-    category: string;
-    author: string;
+    category: {
+        _id:string,
+        name:string
+    };
+    author:{
+        _id:string,
+        firstName:string,
+        lastName:string
+    };
     likes: string[];
     dislikes: string[];
     blocks: string[];

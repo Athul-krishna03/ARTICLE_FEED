@@ -1,49 +1,31 @@
-import { User } from "../entities/user.entity";
-import { IUserRepository } from "../interfaces/repositoryInterfaces/IUserRepository";
-import { UserModel } from "../models/user.model";
 
-function mapUser(doc: any | null): User | null {
-  if (!doc) {
-    return null;
-  } else {
-    return {
-      _id: doc._id.toString(),
-      firstName: doc.firstName,
-      lastName: doc.lastName,
-      phone: doc.phone,
-      email: doc.email,
-      dob: doc.dob,
-      password: doc.password,
-      preferences: doc.preferences,
-      refreshToken:doc.refreshToken
-    };
-  }
+
+import { BaseRepository } from "./base.respository";
+import { IUserRepository } from "../interfaces/repositoryInterfaces/IUserRepository";
+import { UserModel, UserDocument } from "../models/user.model";
+import { User } from "../entities/user.entity";
+
+function toUser(doc: UserDocument): User {
+  return {
+    _id: doc._id.toString(),
+    firstName: doc.firstName,
+    lastName: doc.lastName,
+    phone: doc.phone,
+    email: doc.email,
+    dob: doc.dob,
+    password: doc.password,
+    preferences: doc.preferences,
+    refreshToken: doc.refreshToken ?? undefined,
+  };
 }
 
-export class UserRepository implements IUserRepository {
-  async create(user: User): Promise<User> {
-    const newUser = await UserModel.create(user);
-    const userObj = newUser.toObject();
-    return { 
-      ...userObj, 
-      _id: userObj._id.toString(),
-      refreshToken: userObj.refreshToken === null ? undefined : userObj.refreshToken
-    };
+export class UserRepository extends BaseRepository<User, UserDocument> implements IUserRepository {
+  constructor() {
+    super(UserModel, toUser);
   }
+
   async findByEmailOrPhone(identifier: string): Promise<User | null> {
-    const userData = await UserModel
-      .findOne({email: identifier})
-      .lean();
-    return mapUser(userData);
-  }
-  async findBy(id: string): Promise<User | null> {
-    const userData =await UserModel.findById({_id:id}).lean();
-    return mapUser(userData);
-  }
-  async update(id: string, user: Partial<User>): Promise<User | null> {
-    const userData = await UserModel
-      .findByIdAndUpdate(id, user, { new: true })
-      .lean();
-    return mapUser(userData);
+    const doc = await this.model.findOne({ email: identifier }).lean<UserDocument>();
+    return doc ? toUser(doc as UserDocument) : null;
   }
 }
