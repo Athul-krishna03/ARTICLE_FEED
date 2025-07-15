@@ -58,6 +58,8 @@ export class AuthController {
     }
 
     async getRefreshToken(req: Request, res: Response){
+        console.log(req.cookies);
+        
         const accessToken = req.cookies["x-access-token"];
         const refreshToken = req.cookies["x-refresh-token"];
 

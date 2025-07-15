@@ -1,10 +1,11 @@
 import { api } from "@/api/auth.axios";
 import { axiosInstance } from "@/api/private.axios";
 import { ARTICLE_ROUTES, AUTH_ROUTES } from "@/constants/routeConstants";
+import type { ArticleInput } from "@/hooks/useAddArticle";
 import type { User } from "@/types/user.types";
 
 
-export const register = async (data: any) =>{
+export const register = async (data: User) =>{
     const response = await api.post(AUTH_ROUTES.REGISTER, data)
     return response.data
 };
@@ -32,11 +33,11 @@ export const getUserArticles = async () => {
 export const getArticle = (id: string) => {
     api.get(`/articles/${id}`)
 };
-export const createArticle = async (data: any):Promise<any>=> {
+export const createArticle = async (data: ArticleInput) => {
     const addArticle=await axiosInstance.post(ARTICLE_ROUTES.ADD, data)
     return addArticle
 };
-export const updateArticle = async (id: string, data: any) =>{
+export const updateArticle = async (id: string, data: ArticleInput) =>{
     return (await axiosInstance.put(ARTICLE_ROUTES.UPDATE(id), data)).data.data
 };
 export const deleteArticle = async (id: string) =>{ 

@@ -168,6 +168,7 @@ const MainContentArea = ({articles, type}: ContentTypes) => {
                 addArticle({ ...articleData, _id: editingArticle._id });
             } else {
                 addArticle(articleData);
+                toast.success("Article created successfully");
             }
 
             resetForm();

@@ -34,7 +34,6 @@ const Header: React.FC = () => {
             localStorage.removeItem("user");
             navigate("/login");
         } catch (error) {
-            console.error(error);
             localStorage.removeItem("user");
             navigate("/login");
         }
